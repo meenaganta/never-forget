@@ -1,0 +1,49 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="512"
+  height="512"
+  viewBox="0 0 192 192"
+>
+  <rect
+    width="192"
+    height="192"
+    rx="42"
+    fill="#E87524"
+  />
+
+  <circle
+    cx="96"
+    cy="96"
+    r="58"
+    fill="#ffffff"
+  />
+
+  <path
+    d="M96 55
+       C76 55 63 69 63 88
+       V103
+       L55 114
+       H137
+       L129 103
+       V88
+       C129 69 116 55 96 55Z"
+    fill="#E87524"
+  />
+
+  <circle
+    cx="96"
+    cy="126"
+    r="7"
+    fill="#E87524"
+  />
+
+  <path
+    d="M82 138
+       C85 145 90 148 96 148
+       C102 148 107 145 110 138"
+    fill="none"
+    stroke="#E87524"
+    stroke-width="6"
+    stroke-linecap="round"
+  />
+</svg>

@@ -1,0 +1,1729 @@
+/* =========================================================
+   NEVER FORGET — COMPLETE UI
+   Orange Professional Theme
+   Matches the current App.jsx class names
+========================================================= */
+
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  color: #2f241f;
+  background: #fffaf6;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --primary: #e87524;
+  --primary-dark: #c95d12;
+  --primary-light: #fff0e3;
+  --primary-soft: #fff6ef;
+
+  --orange-border: #f2c7a5;
+  --orange-shadow: rgba(232, 117, 36, 0.18);
+
+  --text-dark: #2f241f;
+  --text: #51443d;
+  --text-muted: #83766e;
+
+  --border: #eadfd8;
+  --border-light: #f0e7e1;
+
+  --surface: #ffffff;
+  --surface-soft: #fffaf6;
+
+  --success-bg: #eaf8f1;
+  --success-text: #19704e;
+
+  --danger-bg: #fff1f1;
+  --danger-text: #a64b4b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 8% 0%,
+      rgba(255, 224, 199, 0.55) 0,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 95% 10%,
+      rgba(255, 242, 226, 0.75) 0,
+      transparent 28%
+    ),
+    #fffaf6;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app {
+  min-height: 100vh;
+  color: var(--text-dark);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 28px 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f28a3a,
+      #e56b1f
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 25px rgba(232, 117, 36, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.38);
+}
+
+/* Clean notification icon inside logo */
+
+.logo svg {
+  width: 25px;
+  height: 25px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand h1 {
+  margin: 0;
+
+  font-size: 25px;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+
+  color: #2f241f;
+}
+
+.brand p {
+  margin: 5px 0 0;
+
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* =========================================================
+   HEADER ACTION BUTTONS
+========================================================= */
+
+.notification-button,
+.add-button {
+  min-height: 44px;
+
+  border-radius: 12px;
+  padding: 0 16px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  font-weight: 700;
+  font-size: 13px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+.notification-button {
+  border: 1px solid #edcfb8;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #fff8f2
+    );
+
+  color: #9a4e1d;
+
+  box-shadow:
+    0 4px 12px rgba(111, 73, 48, 0.06);
+}
+
+.notification-button:hover {
+  transform: translateY(-1px);
+
+  border-color: #e8b890;
+
+  background: #fff2e7;
+
+  box-shadow:
+    0 8px 20px rgba(111, 73, 48, 0.11);
+}
+
+.notification-button:active {
+  transform: translateY(0);
+}
+
+/* Notification icon */
+
+.notification-icon {
+  width: 18px;
+  height: 18px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--primary);
+}
+
+.notification-icon svg {
+  width: 17px;
+  height: 17px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* =========================================================
+   ADD REMINDER
+========================================================= */
+
+.add-button {
+  border: 1px solid #d86116;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f28a3a,
+      #e56b1f
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 18px rgba(232, 117, 36, 0.22);
+}
+
+.add-button:hover {
+  transform: translateY(-1px);
+
+  background:
+    linear-gradient(
+      135deg,
+      #e97827,
+      #d85f14
+    );
+
+  box-shadow:
+    0 11px 24px rgba(232, 117, 36, 0.29);
+}
+
+.add-button:active {
+  transform: translateY(0);
+}
+
+.add-button > span:first-child {
+  font-size: 21px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+
+  padding: 34px 0 70px;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 190px;
+  padding: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  border: 1px solid #f0d5c0;
+  border-radius: 24px;
+
+  background:
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(255, 255, 255, 0.88),
+      transparent 25%
+    ),
+    linear-gradient(
+      135deg,
+      #fff1e5,
+      #fffaf6
+    );
+
+  box-shadow:
+    0 12px 35px rgba(91, 57, 36, 0.07);
+}
+
+.hero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 180px;
+  height: 180px;
+
+  right: -60px;
+  bottom: -80px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(232, 117, 36, 0.09);
+}
+
+.eyebrow {
+  display: inline-block;
+
+  margin-bottom: 9px;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+
+  color: var(--primary-dark);
+}
+
+.hero h2 {
+  position: relative;
+  z-index: 1;
+
+  margin: 0;
+
+  max-width: 550px;
+
+  font-size: clamp(27px, 4vw, 39px);
+  line-height: 1.08;
+  letter-spacing: -1.2px;
+
+  color: #30241f;
+}
+
+.hero p {
+  position: relative;
+  z-index: 1;
+
+  margin: 12px 0 0;
+
+  max-width: 550px;
+
+  color: #766960;
+
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   TOTAL BOX
+========================================================= */
+
+.total-box {
+  position: relative;
+  z-index: 2;
+
+  width: 150px;
+  min-width: 150px;
+
+  padding: 22px 18px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.76);
+
+  box-shadow:
+    0 10px 25px rgba(91, 57, 36, 0.08);
+
+  backdrop-filter: blur(10px);
+}
+
+.total-box strong {
+  font-size: 38px;
+  line-height: 1;
+
+  color: var(--primary);
+}
+
+.total-box span {
+  margin-top: 8px;
+
+  color: #766960;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+/* =========================================================
+   REMINDERS SECTION
+========================================================= */
+
+.reminders-section {
+  margin-top: 38px;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 15px;
+}
+
+.section-header h2 {
+  margin: 0;
+
+  font-size: 23px;
+  letter-spacing: -0.4px;
+
+  color: #352a25;
+}
+
+.section-header > span {
+  color: #81736a;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   BACKUP BUTTONS
+========================================================= */
+
+.backup-actions {
+  display: flex;
+  gap: 9px;
+
+  margin-bottom: 17px;
+}
+
+.export-backup-button,
+.import-backup-button {
+  min-height: 39px;
+
+  padding: 0 13px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #665951;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.export-backup-button:hover,
+.import-backup-button:hover {
+  border-color: #e5b994;
+
+  background: #fff8f2;
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.reminder-tabs {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  width: fit-content;
+  max-width: 100%;
+
+  padding: 5px;
+  margin-bottom: 16px;
+
+  border: 1px solid #eadfd8;
+  border-radius: 13px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 4px 14px rgba(73, 49, 35, 0.05);
+}
+
+.reminder-tabs button {
+  min-height: 38px;
+
+  padding: 0 14px;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: #81746b;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.reminder-tabs button:hover {
+  background: #fff6ef;
+  color: #9a4e1d;
+}
+
+.reminder-tabs button.active {
+  background: #ffead9;
+  color: #c95d12;
+}
+
+.reminder-tabs button span {
+  margin-left: 5px;
+
+  padding: 2px 6px;
+
+  border-radius: 20px;
+
+  background: #f3eee9;
+
+  font-size: 10px;
+}
+
+.reminder-tabs button.active span {
+  background: #ffffff;
+  color: var(--primary);
+}
+
+/* =========================================================
+   SEARCH / FILTER
+========================================================= */
+
+.search-filter {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr) 190px auto;
+
+  gap: 9px;
+
+  margin-bottom: 20px;
+}
+
+.search-box {
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 0 13px;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  transition: 0.2s ease;
+}
+
+.search-box:focus-within {
+  border-color: #e7a875;
+
+  box-shadow:
+    0 0 0 3px rgba(232, 117, 36, 0.09);
+}
+
+.search-box > span {
+  font-size: 15px;
+  opacity: 0.7;
+}
+
+.search-box input {
+  width: 100%;
+  min-width: 0;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  color: #352a25;
+
+  font-size: 13px;
+}
+
+.search-box input::placeholder {
+  color: #aaa099;
+}
+
+.clear-search {
+  width: 24px;
+  height: 24px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #f3eee9;
+
+  color: #756960;
+
+  font-size: 16px;
+  line-height: 1;
+}
+
+.category-filter {
+  min-height: 44px;
+
+  padding: 0 12px;
+
+  border: 1px solid var(--border);
+  border-radius: 11px;
+
+  outline: 0;
+
+  background: #ffffff;
+
+  color: #665951;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.category-filter:focus {
+  border-color: #e7a875;
+}
+
+.clear-filters {
+  min-height: 44px;
+
+  padding: 0 13px;
+
+  border: 1px solid #edcfb8;
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  color: #c95d12;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.clear-filters:hover {
+  background: #fff4eb;
+}
+
+/* =========================================================
+   REMINDER GRID
+========================================================= */
+
+.reminder-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+/* =========================================================
+   REMINDER CARD
+========================================================= */
+
+.reminder-card {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 20px;
+
+  border: 1px solid #e9dfd8;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 7px 22px rgba(73, 49, 35, 0.06);
+
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.reminder-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #e5c7b0;
+
+  box-shadow:
+    0 14px 30px rgba(73, 49, 35, 0.10);
+}
+
+.reminder-card.highlighted {
+  border-color: #ed8b48;
+
+  box-shadow:
+    0 0 0 4px rgba(232, 117, 36, 0.11),
+    0 14px 30px rgba(73, 49, 35, 0.09);
+}
+
+.reminder-card.past-reminder {
+  background: #fdfbf9;
+}
+
+.reminder-card.archived-reminder {
+  opacity: 0.78;
+}
+
+/* =========================================================
+   CARD TOP
+========================================================= */
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.category-icon {
+  width: 43px;
+  height: 43px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 13px;
+
+  background: #fff0e3;
+
+  font-size: 21px;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.card-actions button {
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #ece4de;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  font-size: 14px;
+
+  transition: 0.18s ease;
+}
+
+.card-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.edit-button:hover {
+  background: #fff3e9;
+  border-color: #e8c2a5;
+}
+
+.delete-button:hover {
+  background: #fff1f1;
+  border-color: #f0cccc;
+}
+
+.archive-button:hover,
+.restore-button:hover {
+  background: #eefaf5;
+  border-color: #c9e8dd;
+}
+
+/* =========================================================
+   CARD CONTENT
+========================================================= */
+
+.card-content {
+  margin-top: 17px;
+}
+
+.category {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px 8px;
+
+  border-radius: 20px;
+
+  background: #f6f0eb;
+
+  color: #766960;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+
+  text-transform: uppercase;
+}
+
+.card-content h3 {
+  margin: 9px 0 8px;
+
+  color: #352a25;
+
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: -0.25px;
+
+  overflow-wrap: anywhere;
+}
+
+.date {
+  margin: 0;
+
+  color: #7d7169;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   DAYS BOX
+========================================================= */
+
+.days-box {
+  margin-top: 18px;
+
+  padding-top: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  border-top: 1px solid #eee7e2;
+}
+
+.days-box > div:first-child {
+  display: flex;
+  align-items: baseline;
+
+  gap: 6px;
+}
+
+.days-box strong {
+  color: var(--primary);
+
+  font-size: 21px;
+  line-height: 1;
+}
+
+.days-box span {
+  color: #8a7e76;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.frequency {
+  color: #746960;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-align: right;
+}
+
+.past-reminder .days-box strong {
+  color: #99918b;
+}
+
+.archived-reminder .days-box strong {
+  color: #8c837c;
+}
+
+/* =========================================================
+   EMPTY STATES
+========================================================= */
+
+.empty-state {
+  min-height: 270px;
+
+  padding: 40px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px dashed #dfd3cb;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.70);
+
+  text-align: center;
+}
+
+.empty-icon {
+  width: 58px;
+  height: 58px;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 14px;
+
+  border-radius: 17px;
+
+  background: #fff0e3;
+
+  font-size: 26px;
+}
+
+.empty-state h3 {
+  margin: 0;
+
+  color: #3b302a;
+
+  font-size: 18px;
+}
+
+.empty-state p {
+  max-width: 420px;
+
+  margin: 8px 0 18px;
+
+  color: #81766f;
+
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.empty-state > button {
+  min-height: 42px;
+
+  padding: 0 16px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f28a3a,
+      #e56b1f
+    );
+
+  color: white;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  box-shadow:
+    0 7px 16px rgba(232, 117, 36, 0.18);
+}
+
+.empty-state > button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #e97827,
+      #d85f14
+    );
+}
+
+.import-backup-empty-button {
+  margin-top: 9px;
+
+  min-height: 40px;
+
+  padding: 0 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #dfd4cd;
+  border-radius: 10px;
+
+  background: white;
+
+  color: #665e57;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(47, 36, 31, 0.44);
+
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  width: min(500px, 100%);
+
+  max-height: calc(100vh - 40px);
+
+  overflow-y: auto;
+
+  padding: 25px;
+
+  border: 1px solid #ece2db;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 25px 70px rgba(47, 36, 31, 0.21);
+
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 22px;
+}
+
+.modal-header h2 {
+  margin: 0;
+
+  color: #352a25;
+
+  font-size: 21px;
+  letter-spacing: -0.4px;
+}
+
+.modal-header p {
+  margin: 5px 0 0;
+
+  color: #847870;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.close-button {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #e8ded7;
+  border-radius: 9px;
+
+  background: #fcfaf8;
+
+  color: #6c625b;
+
+  font-size: 22px;
+  line-height: 1;
+
+  transition: 0.18s ease;
+}
+
+.close-button:hover {
+  background: #fff1e7;
+  color: #3e332d;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal form label,
+.notification-time-section label {
+  margin: 0 0 7px;
+
+  color: #554941;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.modal form input[type="text"],
+.modal form input[type="date"],
+.modal form select,
+.notification-time-section input[type="time"] {
+  width: 100%;
+
+  min-height: 44px;
+
+  margin-bottom: 16px;
+
+  padding: 0 12px;
+
+  border: 1px solid #ded5ce;
+  border-radius: 10px;
+
+  outline: none;
+
+  background: #ffffff;
+
+  color: #342a25;
+
+  font-size: 13px;
+
+  transition: 0.18s ease;
+}
+
+.modal form input:focus,
+.modal form select:focus,
+.notification-time-section input:focus {
+  border-color: #e7a875;
+
+  box-shadow:
+    0 0 0 3px rgba(232, 117, 36, 0.09);
+}
+
+/* =========================================================
+   CATEGORY SELECTION
+========================================================= */
+
+.category-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, 1fr);
+
+  gap: 7px;
+
+  margin-bottom: 17px;
+}
+
+.category-option {
+  min-height: 72px;
+
+  padding: 8px 5px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  border: 1px solid #e4dcd6;
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  color: #71675f;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  transition: 0.18s ease;
+}
+
+.category-option span {
+  font-size: 20px;
+}
+
+.category-option:hover {
+  border-color: #e5b994;
+
+  background: #fff9f4;
+}
+
+.category-option.selected {
+  border-color: #ed995c;
+
+  background: #fff0e3;
+
+  color: #c95d12;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(232, 117, 36, 0.08);
+}
+
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
+
+.save-button {
+  width: 100%;
+
+  min-height: 46px;
+
+  margin-top: 4px;
+
+  border: 1px solid #d86116;
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f28a3a,
+      #e56b1f
+    );
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  box-shadow:
+    0 8px 18px rgba(232, 117, 36, 0.20);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.save-button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #e97827,
+      #d85f14
+    );
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 11px 23px rgba(232, 117, 36, 0.26);
+}
+
+.save-button:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   NOTIFICATION SETTINGS
+========================================================= */
+
+.notification-settings-modal {
+  width: min(520px, 100%);
+}
+
+.notification-settings-content {
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+.notification-status-card {
+  padding: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  border: 1px solid #e6ddd7;
+  border-radius: 13px;
+
+  background: #fdfaf8;
+}
+
+.notification-status-card strong {
+  color: #38302b;
+
+  font-size: 13px;
+}
+
+.notification-status-card p {
+  margin: 4px 0 0;
+
+  color: #82766e;
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.status-on,
+.status-off {
+  padding: 5px 9px;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  letter-spacing: 0.6px;
+}
+
+.status-on {
+  background: #def7ed;
+  color: #16805b;
+}
+
+.status-off {
+  background: #f3ece8;
+  color: #81756d;
+}
+
+.notification-time-section {
+  padding: 15px;
+
+  border: 1px solid #e6ddd7;
+  border-radius: 13px;
+
+  background: #ffffff;
+}
+
+.notification-time-section input[type="time"] {
+  margin-bottom: 5px;
+}
+
+.notification-time-section p {
+  margin: 0;
+
+  color: #847870;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   NOTIFICATION ACTION BUTTONS
+========================================================= */
+
+.test-notification-button,
+.disable-notification-button {
+  width: 100%;
+
+  min-height: 43px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.test-notification-button {
+  border: 1px solid #cfe7dc;
+
+  background: #effaf5;
+
+  color: #23745a;
+}
+
+.test-notification-button:hover {
+  background: #e5f7ef;
+}
+
+.disable-notification-button {
+  border: 1px solid #f0d2d2;
+
+  background: #fff5f5;
+
+  color: #a14a4a;
+}
+
+.disable-notification-button:hover {
+  background: #ffeded;
+}
+
+.notification-info {
+  padding: 12px 13px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  border-radius: 11px;
+
+  background: #fff4e9;
+
+  color: #76502f;
+}
+
+.notification-info span {
+  font-size: 15px;
+}
+
+.notification-info p {
+  margin: 0;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 800px) {
+  .header {
+    width: min(100% - 28px, 1180px);
+
+    padding: 18px 0;
+
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .notification-button,
+  .add-button {
+    white-space: nowrap;
+  }
+
+  .main {
+    width: min(100% - 28px, 1180px);
+
+    padding-top: 22px;
+  }
+
+  .hero {
+    padding: 25px;
+  }
+
+  .reminder-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-filter {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .search-box {
+    grid-column: 1 / -1;
+  }
+
+  .clear-filters {
+    grid-column: 1 / -1;
+  }
+}
+
+/* =========================================================
+   MOBILE — 600px
+========================================================= */
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+
+    gap: 16px;
+  }
+
+  .brand {
+    width: 100%;
+  }
+
+  .header-actions {
+    width: 100%;
+
+    flex-direction: row;
+  }
+
+  .notification-button,
+  .add-button {
+    flex: 1;
+  }
+
+  .button-text {
+    display: inline;
+  }
+
+  .hero {
+    min-height: 0;
+
+    padding: 22px;
+
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .total-box {
+    width: 100%;
+    min-width: 0;
+
+    padding: 16px;
+
+    flex-direction: row;
+
+    gap: 10px;
+  }
+
+  .total-box span {
+    margin-top: 0;
+  }
+
+  .reminder-tabs {
+    width: 100%;
+
+    overflow-x: auto;
+  }
+
+  .reminder-tabs button {
+    flex: 1;
+
+    white-space: nowrap;
+
+    padding: 0 10px;
+  }
+
+  .search-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .search-box,
+  .clear-filters {
+    grid-column: auto;
+  }
+
+  .category-filter,
+  .clear-filters {
+    width: 100%;
+  }
+
+  .backup-actions {
+    width: 100%;
+  }
+
+  .export-backup-button,
+  .import-backup-button {
+    flex: 1;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .modal-overlay {
+    padding: 10px;
+
+    align-items: flex-end;
+  }
+
+  .modal {
+    max-height: calc(100vh - 20px);
+
+    padding: 20px;
+
+    border-radius: 20px 20px 14px 14px;
+  }
+}
+
+/* =========================================================
+   MOBILE — 420px
+========================================================= */
+
+@media (max-width: 420px) {
+  .brand h1 {
+    font-size: 22px;
+  }
+
+  .brand p {
+    font-size: 12px;
+  }
+
+  .logo {
+    width: 46px;
+    height: 46px;
+
+    flex-basis: 46px;
+  }
+
+  .header-actions {
+    gap: 7px;
+  }
+
+  .notification-button,
+  .add-button {
+    padding: 0 10px;
+
+    font-size: 11px;
+  }
+
+  .hero h2 {
+    font-size: 27px;
+  }
+
+  .reminder-card {
+    padding: 16px;
+  }
+
+  .card-actions button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .notification-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .notification-icon svg {
+    width: 15px;
+    height: 15px;
+  }
+}
