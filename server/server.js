@@ -26,6 +26,12 @@ const dataDirectory = path.join(
   "data"
 );
 
+if (!fs.existsSync(dataDirectory)) {
+  fs.mkdirSync(dataDirectory, {
+    recursive: true,
+  });
+}
+
 const settingsFile = path.join(
   dataDirectory,
   "settings.json"
