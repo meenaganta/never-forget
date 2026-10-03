@@ -1,61 +1,17 @@
 import cron from "node-cron";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 
 import webpush from "./push.js";
+import Reminder from "./models/Reminder.js";
+import Subscription from "./models/Subscription.js";
+import Settings from "./models/Settings.js";
+import NotificationLog from "./models/NotificationLog.js";
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const dataDirectory = path.join(
-  __dirname,
-  "data"
-);
-
-const remindersFile = path.join(
-  dataDirectory,
-  "reminders.json"
-);
-
-const subscriptionsFile = path.join(
-  dataDirectory,
-  "subscriptions.json"
-);
-
-const sentFile = path.join(
-  dataDirectory,
-  "sent.json"
-);
-
-const settingsFile = path.join(
-  dataDirectory,
-  "settings.json"
-);
-
-function readJson(filePath) {
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, "[]");
-  }
-
-  try {
-    return JSON.parse(
-      fs.readFileSync(filePath, "utf-8")
-    );
-  } catch {
-    return [];
-  }
-}
-
-function writeJson(filePath, data) {
-  fs.writeFileSync(
-    filePath,
-    JSON.stringify(data, null, 2)
-  );
-}
+/* =========================
+   DATE / TIME HELPERS
+========================= */
 
 function getToday() {
   return new Intl.DateTimeFormat("en-CA", {
@@ -91,6 +47,10 @@ function daysBetween(date1, date2) {
       (1000 * 60 * 60 * 24)
   );
 }
+
+/* =========================
+   REMINDER LOGIC
+========================= */
 
 function shouldSend(reminder) {
   const today = getToday();
@@ -137,11 +97,15 @@ function shouldSend(reminder) {
   return false;
 }
 
+/* =========================
+   SEND NOTIFICATION
+========================= */
+
 async function sendReminderNotification(
   reminder
 ) {
   const subscriptions =
-    readJson(subscriptionsFile);
+    await Subscription.find().lean();
 
   if (subscriptions.length === 0) {
     console.log(
@@ -155,6 +119,7 @@ async function sendReminderNotification(
 
   const payload = JSON.stringify({
     title: `🔔 ${reminder.title}`,
+
     body:
       reminder.date === today
         ? "Your important date is today!"
@@ -162,11 +127,11 @@ async function sendReminderNotification(
             today,
             reminder.date
           )} days left`,
+
     url: "/",
+
     reminderId: reminder.id,
   });
-
-  const validSubscriptions = [];
 
   for (const subscription of subscriptions) {
     try {
@@ -174,8 +139,6 @@ async function sendReminderNotification(
         subscription,
         payload
       );
-
-      validSubscriptions.push(subscription);
 
       console.log(
         `Notification sent: ${reminder.title}`
@@ -188,84 +151,91 @@ async function sendReminderNotification(
       );
 
       if (
-        error.statusCode !== 404 &&
-        error.statusCode !== 410
+        error.statusCode === 404 ||
+        error.statusCode === 410
       ) {
-        validSubscriptions.push(
-          subscription
+        await Subscription.deleteOne({
+          endpoint: subscription.endpoint,
+        });
+
+        console.log(
+          "Removed expired push subscription."
         );
       }
     }
   }
-
-  writeJson(
-    subscriptionsFile,
-    validSubscriptions
-  );
 }
+
+/* =========================
+   CHECK REMINDERS
+========================= */
 
 async function checkReminders() {
-  const currentTime = getCurrentTime();
+  try {
+    const currentTime = getCurrentTime();
 
-const settings = readJson(settingsFile);
+    const settings =
+      await Settings.findOne().lean();
 
-const notificationTime =
-  settings.notificationTime || "09:00";
+    const notificationTime =
+      settings?.notificationTime || "09:00";
 
-const targetTime = notificationTime;
-
-console.log(
-  `Scheduler check → Current: ${currentTime} | Target: ${targetTime}`
-);
-
-if (currentTime !== targetTime) {
-  return;
-}
-
-  const reminders =
-    readJson(remindersFile);
-
-  const sent =
-    readJson(sentFile);
-
-  const today = getToday();
-
-  for (const reminder of reminders) {
-    if (!shouldSend(reminder)) {
-      continue;
-    }
-
-    const sentKey =
-      `${reminder.id}_${today}`;
-
-    if (sent.includes(sentKey)) {
-      continue;
-    }
-
-    await sendReminderNotification(
-      reminder
+    console.log(
+      `Scheduler check → Current: ${currentTime} | Target: ${notificationTime}`
     );
 
-    sent.push(sentKey);
-  }
+    if (currentTime !== notificationTime) {
+      return;
+    }
 
-  writeJson(sentFile, sent);
+    const reminders =
+      await Reminder.find().lean();
+
+    const today = getToday();
+
+    for (const reminder of reminders) {
+      if (!shouldSend(reminder)) {
+        continue;
+      }
+
+      const sentKey =
+        `${reminder.id}_${today}`;
+
+      const alreadySent =
+        await NotificationLog.exists({
+          sentKey,
+        });
+
+      if (alreadySent) {
+        continue;
+      }
+
+      await sendReminderNotification(
+        reminder
+      );
+
+      await NotificationLog.create({
+        sentKey,
+        reminderId: reminder.id,
+        date: today,
+      });
+    }
+  } catch (error) {
+    console.error(
+      "Scheduler error:",
+      error
+    );
+  }
 }
 
-/*
-Runs every minute.
-The actual notification time is controlled
-by NOTIFICATION_HOUR and NOTIFICATION_MINUTE.
-*/
+/* =========================
+   RUN EVERY MINUTE
+========================= */
+
 cron.schedule(
   "* * * * *",
   () => {
-    checkReminders().catch((error) => {
-      console.error(
-        "Scheduler error:",
-        error
-      );
-    });
+    checkReminders();
   },
   {
     timezone:

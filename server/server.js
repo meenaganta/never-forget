@@ -1,80 +1,25 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
 import webpush from "./push.js";
-import "./scheduler.js";
+import connectDB from "./db.js";
+
+import Reminder from "./models/Reminder.js";
+import Subscription from "./models/Subscription.js";
+import Settings from "./models/Settings.js";
 
 dotenv.config();
+
+await connectDB();
+
+await import("./scheduler.js");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
-
 app.use(cors());
 app.use(express.json());
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const dataDirectory = path.join(
-  __dirname,
-  "data"
-);
-
-if (!fs.existsSync(dataDirectory)) {
-  fs.mkdirSync(dataDirectory, {
-    recursive: true,
-  });
-}
-
-const settingsFile = path.join(
-  dataDirectory,
-  "settings.json"
-);
-
-const remindersFile = path.join(
-  dataDirectory,
-  "reminders.json"
-);
-
-const subscriptionsFile = path.join(
-  dataDirectory,
-  "subscriptions.json"
-);
-
-function ensureFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, "[]");
-  }
-}
-
-function readJson(filePath) {
-  ensureFile(filePath);
-
-  try {
-    return JSON.parse(
-      fs.readFileSync(filePath, "utf-8")
-    );
-  } catch {
-    return [];
-  }
-}
-
-function writeJson(filePath, data) {
-  fs.writeFileSync(
-    filePath,
-    JSON.stringify(data, null, 2)
-  );
-}
-
-ensureFile(remindersFile);
-ensureFile(subscriptionsFile);
-ensureFile(settingsFile);
 
 /* =========================
    BASIC ROUTE
@@ -87,405 +32,339 @@ app.get("/", (req, res) => {
 });
 
 /* =========================
-   GET REMINDERS
+   REMINDERS
 ========================= */
 
-app.get("/api/reminders", (req, res) => {
-  const reminders = readJson(remindersFile);
+app.get("/api/reminders", async (req, res) => {
+  try {
+    const reminders = await Reminder.find()
+      .sort({ createdAt: 1 })
+      .lean();
 
-  res.json(reminders);
-});
-
-/* =========================
-   ADD REMINDER
-========================= */
-
-app.post("/api/reminders", (req, res) => {
-  const {
-    title,
-    date,
-    category,
-    frequency,
-  } = req.body;
-
-  if (
-    !title ||
-    !date ||
-    !category ||
-    !frequency
-  ) {
-    return res.status(400).json({
-      message:
-        "All reminder fields are required.",
+    res.json(reminders);
+  } catch (error) {
+    console.error("Get reminders error:", error);
+    res.status(500).json({
+      message: "Failed to fetch reminders",
     });
   }
-
-  const reminders =
-    readJson(remindersFile);
-
-  const reminder = {
-    id: Date.now().toString(),
-    title: title.trim(),
-    date,
-    category,
-    frequency,
-    createdAt:
-      new Date().toISOString(),
-  };
-
-  reminders.push(reminder);
-
-  writeJson(
-    remindersFile,
-    reminders
-  );
-
-  res.status(201).json(reminder);
 });
 
-/* =========================
-   EDIT REMINDER
-========================= */
+app.post("/api/reminders", async (req, res) => {
+  try {
+    const reminder = await Reminder.create(req.body);
 
-app.put(
-  "/api/reminders/:id",
-  (req, res) => {
-    const {
-      title,
-      date,
-      category,
-      frequency,
-    } = req.body;
+    res.status(201).json(reminder);
+  } catch (error) {
+    console.error("Create reminder error:", error);
 
-    if (
-      !title ||
-      !date ||
-      !category ||
-      !frequency
-    ) {
-      return res.status(400).json({
-        message:
-          "All reminder fields are required.",
-      });
-    }
+    res.status(500).json({
+      message: "Failed to create reminder",
+      error: error.message,
+    });
+  }
+});
 
-    const reminders =
-      readJson(remindersFile);
+app.put("/api/reminders/:id", async (req, res) => {
+  try {
+    const reminder = await Reminder.findOneAndUpdate(
+      { id: req.params.id },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
-    const reminderIndex =
-      reminders.findIndex(
-        (reminder) =>
-          reminder.id ===
-          req.params.id
-      );
-
-    if (reminderIndex === -1) {
+    if (!reminder) {
       return res.status(404).json({
-        message:
-          "Reminder not found.",
+        message: "Reminder not found",
       });
     }
 
-    const existingReminder =
-      reminders[reminderIndex];
+    res.json(reminder);
+  } catch (error) {
+    console.error("Update reminder error:", error);
 
-    const updatedReminder = {
-      ...existingReminder,
-      title: title.trim(),
-      date,
-      category,
-      frequency,
-      updatedAt:
-        new Date().toISOString(),
-    };
-
-    reminders[reminderIndex] =
-      updatedReminder;
-
-    writeJson(
-      remindersFile,
-      reminders
-    );
-
-    res.json(updatedReminder);
-  }
-);
-
-app.patch("/api/reminders/:id/archive", (req, res) => {
-  const { archived } = req.body;
-
-  if (typeof archived !== "boolean") {
-    return res.status(400).json({
-      message: "Archived value must be true or false.",
+    res.status(500).json({
+      message: "Failed to update reminder",
+      error: error.message,
     });
   }
-
-  const reminders = readJson(remindersFile);
-
-  const reminderIndex = reminders.findIndex(
-    (reminder) => reminder.id === req.params.id
-  );
-
-  if (reminderIndex === -1) {
-    return res.status(404).json({
-      message: "Reminder not found.",
-    });
-  }
-
-  reminders[reminderIndex] = {
-    ...reminders[reminderIndex],
-    archived,
-    updatedAt: new Date().toISOString(),
-  };
-
-  writeJson(remindersFile, reminders);
-
-  res.json(reminders[reminderIndex]);
 });
 
-/* =========================
-   DELETE REMINDER
-========================= */
+app.patch("/api/reminders/:id/archive", async (req, res) => {
+  try {
+    const { archived } = req.body;
 
-app.delete(
-  "/api/reminders/:id",
-  (req, res) => {
-    const reminders =
-      readJson(remindersFile);
+    const reminder = await Reminder.findOneAndUpdate(
+      { id: req.params.id },
+      { archived: Boolean(archived) },
+      { new: true }
+    ).lean();
 
-    const updatedReminders =
-      reminders.filter(
-        (reminder) =>
-          reminder.id !==
-          req.params.id
-      );
+    if (!reminder) {
+      return res.status(404).json({
+        message: "Reminder not found",
+      });
+    }
 
-    writeJson(
-      remindersFile,
-      updatedReminders
+    res.json(reminder);
+  } catch (error) {
+    console.error("Archive reminder error:", error);
+
+    res.status(500).json({
+      message: "Failed to archive reminder",
+    });
+  }
+});
+
+app.patch("/api/reminders/:id", async (req, res) => {
+  try {
+    const reminder = await Reminder.findOneAndUpdate(
+      { id: req.params.id },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
     );
+
+    if (!reminder) {
+      return res.status(404).json({
+        message: "Reminder not found",
+      });
+    }
+
+    res.json(reminder);
+  } catch (error) {
+    console.error("Patch reminder error:", error);
+
+    res.status(500).json({
+      message: "Failed to update reminder",
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/api/reminders/:id", async (req, res) => {
+  try {
+    const reminder = await Reminder.findOneAndDelete({
+      id: req.params.id,
+    });
+
+    if (!reminder) {
+      return res.status(404).json({
+        message: "Reminder not found",
+      });
+    }
 
     res.json({
-      message:
-        "Reminder deleted successfully.",
+      message: "Reminder deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete reminder error:", error);
+
+    res.status(500).json({
+      message: "Failed to delete reminder",
+      error: error.message,
     });
   }
-);
+});
+
+/* =========================
+   SETTINGS
+========================= */
+
+app.get("/api/settings", async (req, res) => {
+  try {
+    let settings = await Settings.findOne().lean();
+
+    if (!settings) {
+      settings = await Settings.create({
+        notificationTime: "09:00",
+      });
+    }
+
+    res.json(settings);
+  } catch (error) {
+    console.error("Get settings error:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch settings",
+    });
+  }
+});
+
+app.put("/api/settings", async (req, res) => {
+  try {
+    let settings = await Settings.findOne();
+
+    if (!settings) {
+      settings = new Settings(req.body);
+    } else {
+      Object.assign(settings, req.body);
+    }
+
+    await settings.save();
+
+    res.json(settings);
+  } catch (error) {
+    console.error("Update settings error:", error);
+
+    res.status(500).json({
+      message: "Failed to update settings",
+      error: error.message,
+    });
+  }
+});
 
 /* =========================
    PUSH PUBLIC KEY
 ========================= */
 
-app.get("/api/settings", (req, res) => {
-  const settings = readJson(settingsFile);
-
+app.get("/api/push/public-key", (req, res) => {
   res.json({
-    notificationTime:
-      settings.notificationTime || "09:00",
+    publicKey: process.env.VAPID_PUBLIC_KEY,
   });
 });
 
-app.put("/api/settings", (req, res) => {
-  const { notificationTime } = req.body;
-
-  if (!notificationTime) {
-    return res.status(400).json({
-      message: "Notification time is required.",
-    });
-  }
-
-  const settings = {
-    notificationTime,
-  };
-
-  writeJson(settingsFile, settings);
-
-  res.json(settings);
-});
-
-app.get(
-  "/api/push/public-key",
-  (req, res) => {
-    res.json({
-      publicKey:
-        process.env.VAPID_PUBLIC_KEY,
-    });
-  }
-);
-
 /* =========================
-   SAVE PUSH SUBSCRIPTION
+   PUSH SUBSCRIBE
 ========================= */
 
-app.post(
-  "/api/push/subscribe",
-  (req, res) => {
+app.post("/api/push/subscribe", async (req, res) => {
+  try {
     const subscription = req.body;
 
     if (
       !subscription ||
-      !subscription.endpoint
+      !subscription.endpoint ||
+      !subscription.keys
     ) {
       return res.status(400).json({
-        message:
-          "Invalid push subscription.",
+        message: "Invalid push subscription",
       });
     }
 
-    const subscriptions =
-      readJson(
-        subscriptionsFile
+    const savedSubscription =
+      await Subscription.findOneAndUpdate(
+        {
+          endpoint: subscription.endpoint,
+        },
+        {
+          endpoint: subscription.endpoint,
+          keys: subscription.keys,
+        },
+        {
+          new: true,
+          upsert: true,
+          setDefaultsOnInsert: true,
+        }
       );
 
-    const alreadyExists =
-      subscriptions.some(
-        (item) =>
-          item.endpoint ===
-          subscription.endpoint
-      );
+    res.status(201).json(savedSubscription);
+  } catch (error) {
+    console.error("Subscribe error:", error);
 
-    if (!alreadyExists) {
-      subscriptions.push(
-        subscription
-      );
-
-      writeJson(
-        subscriptionsFile,
-        subscriptions
-      );
-    }
-
-    res.json({
-      message:
-        "Push subscription saved.",
+    res.status(500).json({
+      message: "Failed to save push subscription",
+      error: error.message,
     });
   }
-);
+});
 
 /* =========================
-   REMOVE PUSH SUBSCRIPTION
+   PUSH UNSUBSCRIBE
 ========================= */
 
-app.post(
-  "/api/push/unsubscribe",
-  (req, res) => {
-    const { endpoint } =
-      req.body;
+app.post("/api/push/unsubscribe", async (req, res) => {
+  try {
+    const endpoint = req.body?.endpoint;
 
     if (!endpoint) {
       return res.status(400).json({
-        message:
-          "Endpoint is required.",
+        message: "Endpoint is required",
       });
     }
 
-    const subscriptions =
-      readJson(
-        subscriptionsFile
-      );
-
-    const updatedSubscriptions =
-      subscriptions.filter(
-        (item) =>
-          item.endpoint !==
-          endpoint
-      );
-
-    writeJson(
-      subscriptionsFile,
-      updatedSubscriptions
-    );
+    await Subscription.deleteOne({
+      endpoint,
+    });
 
     res.json({
-      message:
-        "Subscription removed.",
+      message: "Push subscription removed",
+    });
+  } catch (error) {
+    console.error("Unsubscribe error:", error);
+
+    res.status(500).json({
+      message: "Failed to remove subscription",
     });
   }
-);
+});
 
 /* =========================
-   TEST NOTIFICATION
+   TEST PUSH
 ========================= */
 
-app.post(
-  "/api/push/test",
-  async (req, res) => {
+app.post("/api/push/test", async (req, res) => {
+  try {
     const subscriptions =
-      readJson(
-        subscriptionsFile
-      );
+      await Subscription.find().lean();
 
-    if (
-      subscriptions.length === 0
-    ) {
-      return res.status(400).json({
-        message:
-          "No push subscription found. Enable notifications first.",
+    if (subscriptions.length === 0) {
+      return res.status(404).json({
+        message: "No push subscriptions available",
       });
     }
 
-    const reminders =
-      readJson(remindersFile);
+    const payload = JSON.stringify({
+      title: "🔔 Never Forget",
+      body: "Test notification received successfully!",
+      url: "/",
+    });
 
-    if (reminders.length === 0) {
-      return res.status(400).json({
-        message:
-          "No reminders found.",
-      });
-    }
+    let sent = 0;
 
-    const reminder =
-      reminders[0];
-
-    const payload =
-      JSON.stringify({
-        title: `🔔 ${reminder.title}`,
-        body:
-          "Test notification — click to open this reminder.",
-        url: "/",
-        reminderId:
-          reminder.id,
-      });
-
-    const results = [];
-
-    for (
-      const subscription of subscriptions
-    ) {
+    for (const subscription of subscriptions) {
       try {
         await webpush.sendNotification(
           subscription,
           payload
         );
 
-        results.push({
-          success: true,
-          endpoint:
-            subscription.endpoint,
-        });
+        sent++;
       } catch (error) {
         console.error(
-          "Push notification failed:",
+          "Test push error:",
+          error.statusCode,
           error.message
         );
 
-        results.push({
-          success: false,
-          endpoint:
-            subscription.endpoint,
-          error:
-            error.message,
-        });
+        if (
+          error.statusCode === 404 ||
+          error.statusCode === 410
+        ) {
+          await Subscription.deleteOne({
+            endpoint: subscription.endpoint,
+          });
+        }
       }
     }
 
     res.json({
-      message:
-        "Test notification processed.",
-      results,
+      message: "Test notification sent",
+      sent,
+    });
+  } catch (error) {
+    console.error("Test push error:", error);
+
+    res.status(500).json({
+      message: "Failed to send test notification",
     });
   }
-);
+});
 
 /* =========================
    START SERVER
@@ -493,6 +372,6 @@ app.post(
 
 app.listen(PORT, () => {
   console.log(
-    `Never Forget backend running on http://localhost:${PORT}`
+    `Never Forget backend running on port ${PORT}`
   );
 });
